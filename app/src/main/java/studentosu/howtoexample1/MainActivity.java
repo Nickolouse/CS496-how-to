@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.graphics.Color;
 
 /**
  * The code here may is originally from an answer in stack overflow that is not my own. I am taking
@@ -27,19 +28,11 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        main_text = (TextView) findViewById(R.id.percent_field);
-        main_button = (Button) findViewById(R.id.cancel_button);
-        main_button.setOnClickListener(new ButtonListener());
+        main_text = (TextView) findViewById(R.id.main_text);
+        main_text.setText("Hello world!");
+        main_text.setTextColor(Color.BLACK);
         our_async_task = new InitTask();
         our_async_task.execute(this);
-
-    }
-
-    protected class ButtonListener implements View.OnClickListener {
-
-        public void onClick(View v) {
-            our_async_task.cancel(true);
-        }
     }
 
     /**
@@ -52,6 +45,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            /**
+             * initialize variables and other actions that must happen first.
+             */
         }
 
         /**
@@ -59,38 +55,19 @@ public class MainActivity extends AppCompatActivity {
          */
         @Override
         protected String doInBackground(Context... params) {
-            int i = 0;
-            while (i <= 50) {
+            for(int i = 0; i < 10; i++){
                 try {
-                    Thread.sleep(50);
-                    publishProgress(i);
-                    i++;
+                    Thread.sleep(300);
                 }
                 catch (Exception e) {
+                    Log.i("async_tutorial", e.getMessage());
                 }
+                //This is a trivial calculation... and will not take a noticable amount of time
+                //but it servs as a place holder to show that the work is done here.
             }
-            return "COMPLETE!";
+            return "I am done!";
         }
 
-        /**
-         * This method can be called from doInBackground to do updates to the UI
-         */
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-            main_text.setText((values[0] * 2) + "%");
-            main_text.setTextSize(values[0]);
-        }
-
-        /**
-         * This method should be used if it makes sense to allow the user to cancel the action.
-         */
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-            main_text.setText("Cancelled!");
-            main_text.setTextColor(0xFFFF0000);
-        }
 
         /**
          * This is the last thing that happens after doInBackground exits
@@ -99,8 +76,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             main_text.setText(result);
-            main_text.setTextColor(0xFF69adea);
-            main_button.setVisibility(View.INVISIBLE);
+            main_text.setTextColor(Color.RED);
         }
     }
 }
