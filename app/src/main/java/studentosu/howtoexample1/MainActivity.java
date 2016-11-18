@@ -2,57 +2,63 @@ package studentosu.howtoexample1;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+/**
+ * The code here may is originally from an answer in stack overflow that is not my own. I am taking
+ * this as a base and modifying it to create my how to. There will likely be little left of the original
+ * codet hat I am basing it.
+ * http://stackoverflow.com/questions/6450275/android-how-to-work-with-asynctasks-progressdialog
+ * the post that I used was by: Sunil Kumar Sahoo
+ */
+
 public class MainActivity extends AppCompatActivity {
 
-    protected TextView _percentField;
-
-    protected Button _cancelButton;
-
-    protected InitTask _initTask;
+    protected TextView main_text;
+    protected Button main_button;
+    protected InitTask our_async_task;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        _percentField = (TextView) findViewById(R.id.percent_field);
-        _cancelButton = (Button) findViewById(R.id.cancel_button);
-        _cancelButton.setOnClickListener(new CancelButtonListener());
-        _initTask = new InitTask();
-        _initTask.execute(this);
+        main_text = (TextView) findViewById(R.id.percent_field);
+        main_button = (Button) findViewById(R.id.cancel_button);
+        main_button.setOnClickListener(new ButtonListener());
+        our_async_task = new InitTask();
+        our_async_task.execute(this);
 
     }
 
-    protected class CancelButtonListener implements View.OnClickListener {
+    protected class ButtonListener implements View.OnClickListener {
 
         public void onClick(View v) {
-            _initTask.cancel(true);
+            our_async_task.cancel(true);
         }
     }
 
     /**
-     * sub-class of AsyncTask
+     * sub-class of the activity that inherits from AsyncTask
      */
     protected class InitTask extends AsyncTask<Context, Integer, String> {
+        /**
+         * This method is called before any of the others
+         */
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
 
-        // -- run intensive processes here
-        // -- notice that the datatype of the first param in the class definition matches the param passed to this
-        // method
-        // -- and that the datatype of the last param in the class definition matches the return type of this method
+        /**
+         * This is where the meat of your async task will take place in more complex examples
+         */
         @Override
         protected String doInBackground(Context... params) {
-            // -- on every iteration
-            // -- runs a while loop that causes the thread to sleep for 50 milliseconds
-            // -- publishes the progress - calls the onProgressUpdate handler defined below
-            // -- and increments the counter variable i by one
             int i = 0;
             while (i <= 50) {
                 try {
@@ -61,47 +67,40 @@ public class MainActivity extends AppCompatActivity {
                     i++;
                 }
                 catch (Exception e) {
-                    Log.i("makemachine", e.getMessage());
                 }
             }
             return "COMPLETE!";
         }
 
-        // -- gets called just before thread begins
-        @Override
-        protected void onPreExecute() {
-            Log.i("makemachine", "onPreExecute()");
-            super.onPreExecute();
-        }
-
-        // -- called from the publish progress
-        // -- notice that the datatype of the second param gets passed to this method
+        /**
+         * This method can be called from doInBackground to do updates to the UI
+         */
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
-            Log.i("makemachine", "onProgressUpdate(): " + String.valueOf(values[0]));
-            _percentField.setText((values[0] * 2) + "%");
-            _percentField.setTextSize(values[0]);
+            main_text.setText((values[0] * 2) + "%");
+            main_text.setTextSize(values[0]);
         }
 
-        // -- called if the cancel button is pressed
+        /**
+         * This method should be used if it makes sense to allow the user to cancel the action.
+         */
         @Override
         protected void onCancelled() {
             super.onCancelled();
-            Log.i("makemachine", "onCancelled()");
-            _percentField.setText("Cancelled!");
-            _percentField.setTextColor(0xFFFF0000);
+            main_text.setText("Cancelled!");
+            main_text.setTextColor(0xFFFF0000);
         }
 
-        // -- called as soon as doInBackground method completes
-        // -- notice that the third param gets passed to this method
+        /**
+         * This is the last thing that happens after doInBackground exits
+         */
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            Log.i("makemachine", "onPostExecute(): " + result);
-            _percentField.setText(result);
-            _percentField.setTextColor(0xFF69adea);
-            _cancelButton.setVisibility(View.INVISIBLE);
+            main_text.setText(result);
+            main_text.setTextColor(0xFF69adea);
+            main_button.setVisibility(View.INVISIBLE);
         }
     }
 }
