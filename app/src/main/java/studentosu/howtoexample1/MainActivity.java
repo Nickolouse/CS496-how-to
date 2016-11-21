@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * sub-class of the activity that inherits from AsyncTask
      */
-    protected class InitTask extends AsyncTask<Context, Integer, String> {
+    protected class InitTask extends AsyncTask<Context, String, String> {
         /**
          * This method is called before any of the others
          */
@@ -63,12 +64,26 @@ public class MainActivity extends AppCompatActivity {
             while (i <= 50) {
                 try {
                     Thread.sleep(50);
-                    publishProgress(i);
+
                     i++;
                 }
                 catch (Exception e) {
                 }
+
             }
+            publishProgress("Fetching data from server");
+            i = 0;
+            while (i <= 50) {
+                try {
+                    Thread.sleep(50);
+
+                    i++;
+                }
+                catch (Exception e) {
+                }
+
+            }
+            publishProgress("Processing Data");
             return "COMPLETE!";
         }
 
@@ -76,10 +91,9 @@ public class MainActivity extends AppCompatActivity {
          * This method can be called from doInBackground to do updates to the UI
          */
         @Override
-        protected void onProgressUpdate(Integer... values) {
+        protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
-            main_text.setText((values[0] * 2) + "%");
-            main_text.setTextSize(values[0]);
+            main_text.setText(values[0]);
         }
 
         /**
@@ -88,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onCancelled() {
             super.onCancelled();
-            main_text.setText("Cancelled!");
+            main_text.setText("Cancelled");
             main_text.setTextColor(0xFFFF0000);
         }
 
@@ -99,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             main_text.setText(result);
-            main_text.setTextColor(0xFF69adea);
+            main_text.setTextColor(Color.RED);
             main_button.setVisibility(View.INVISIBLE);
         }
     }
