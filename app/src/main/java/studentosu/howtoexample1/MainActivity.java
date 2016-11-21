@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        main_text = (TextView) findViewById(R.id.percent_field);
+        main_text = (TextView) findViewById(R.id.text_field);
         main_button = (Button) findViewById(R.id.cancel_button);
         main_button.setOnClickListener(new ButtonListener());
         our_async_task = new InitTask();
@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
          */
         @Override
         protected String doInBackground(Context... params) {
+            publishProgress("Fetching data from server");
+            //Now we are going to do some really important calculations to fetch the data. Perhaps
             int i = 0;
             while (i <= 50) {
                 try {
@@ -69,9 +71,9 @@ public class MainActivity extends AppCompatActivity {
                 }
                 catch (Exception e) {
                 }
-
             }
-            publishProgress("Fetching data from server");
+            //Now we will do some more super important calculations to process the data.
+            publishProgress("Processing Data");
             i = 0;
             while (i <= 50) {
                 try {
@@ -83,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             }
-            publishProgress("Processing Data");
             return "COMPLETE!";
         }
 
@@ -97,24 +98,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         /**
-         * This method should be used if it makes sense to allow the user to cancel the action.
-         */
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-            main_text.setText("Cancelled");
-            main_text.setTextColor(0xFFFF0000);
-        }
-
-        /**
          * This is the last thing that happens after doInBackground exits
          */
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             main_text.setText(result);
-            main_text.setTextColor(Color.RED);
+            main_text.setTextColor(Color.BLUE);
             main_button.setVisibility(View.INVISIBLE);
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            Log.i("makemachine", "onCancelled()");
+            main_text.setText("Cancelled!");
+            main_text.setTextColor(Color.RED);
         }
     }
 }
